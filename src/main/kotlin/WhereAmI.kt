@@ -1,6 +1,9 @@
+import geofence.SqliteCRUD
+import geofence.SqliteDataAccess
 import network.NetworkRecorder
 
 fun main(args: Array<String>) {
+    val data = SqliteDataAccess()
 
     val networkRecorder = NetworkRecorder()
     networkRecorder.startRecord()
@@ -14,7 +17,7 @@ fun main(args: Array<String>) {
 
     val summary = networkRecorder.getSummary()
     for (network in summary) {
-        println("SSID: " + network.ssid + " | BSSID: " + network.bssid + " | MIN SIGNAL: " + network.minSignal.toString() + " | MAX SIGNAL: " + network.maxSignal.toString())
+        println("SSID: " + network.ssid + " | BSSID: " + network.bssid + " | MIN SIGNAL: " + network.minSignal.toString() + " | MAX SIGNAL: " + network.maxSignal.toString() + " | Delta: " + (network.maxSignal - network.minSignal).toString())
     }
 
 }
