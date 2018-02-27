@@ -1,3 +1,6 @@
+# Dependencies
+lib/
+
 ### Windows.gitignore
 # Windows thumbnail cache files
 Thumbs.db
