@@ -14,11 +14,14 @@ class NetworkRecorder {
             if (scanSummary.containsKey(newNetwork.bssid)) {
                 val network = scanSummary[newNetwork.bssid]
 
-                // Check lower bound
-                if (newNetwork.signal < network!!.minSignal) network.minSignal = newNetwork.signal
+                // Filter out networks with weak signal
+                if (newNetwork.signal > 20) {
+                    // Check lower bound
+                    if (newNetwork.signal < network!!.minSignal) network.minSignal = newNetwork.signal
 
-                // check upper bound
-                if (newNetwork.signal > network!!.maxSignal) network.maxSignal = newNetwork.signal
+                    // check upper bound
+                    if (newNetwork.signal > network!!.maxSignal) network.maxSignal = newNetwork.signal
+                }
             }
             else {
                 scanSummary[newNetwork.bssid] = NetworkCharacteristics(ssid = newNetwork.ssid, bssid = newNetwork.bssid, minSignal = newNetwork.signal, maxSignal = newNetwork.signal)
