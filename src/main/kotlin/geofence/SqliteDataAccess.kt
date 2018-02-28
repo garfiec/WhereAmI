@@ -230,23 +230,29 @@ class SqliteDataAccess: GeofenceAPI{
 
     override fun findRoomCandidates(scan: List<NetworkScanner.Network>): List<String> {
         val sqlConditions = ArrayList<String>()
-        scan.mapTo(sqlConditions) { "(network_data.SSID=? AND " + it.signal + " BETWEEN network_data.Min AND network_data.Max)" }
+        scan.mapTo(sqlConditions) { "(network_data.BSSID=? AND " + it.signal + " BETWEEN network_data.Min AND network_data.Max)" }
 
         // To avoid sql injection because of name, prepared statement for ssid is used
         val sqlConditionsString = sqlConditions.toList().joinToString(" OR ")
 
         val connection = db.connection()
-        val sql = "SELECT building.Name as BuildingName, room.Name as RoomName, count(*) as Frequency FROM room\n" +
+        val sql = "SELECT building.Name as BuildingName, room.Name as RoomName, (src.Matches * 100.0 / count(network_data.RoomID))  as PercentMatch FROM network_data\n" +
+                "INNER JOIN room\n" +
+                "ON room.RoomID=network_data.RoomID\n" +
                 "INNER JOIN building\n" +
                 "ON building.BuildingID=room.BuildingID\n" +
-                "INNER JOIN network_data\n" +
-                "ON network_data.RoomID=room.RoomID\n" +
-                "WHERE " + sqlConditionsString + "\n" +
+                "INNER JOIN \n" +
+                "(\n" +
+                "\tSELECT network_data.RoomID as RoomID, count(*) as Matches FROM network_data\n" +
+                "\tWHERE " + sqlConditionsString + "\n" +
+                "\tGROUP BY RoomID\n" +
+                ") src\n" +
+                "ON src.RoomID=room.RoomID\n" +
                 "GROUP BY room.Name\n" +
-                "ORDER BY Frequency DESC\n"
+                "ORDER BY PercentMatch DESC"
         val statement = connection.prepareStatement(sql)
         for (i in 0 until scan.size) {
-            statement.setString(i+1, scan[i].ssid)
+            statement.setString(i+1, scan[i].bssid)
         }
 
         val result = statement.executeQuery()
@@ -255,8 +261,7 @@ class SqliteDataAccess: GeofenceAPI{
             while (result.next()) {
                 val buildingName = result.getString("BuildingName")
                 val roomName = result.getString("RoomName")
-                val frequency = result.getInt("Frequency")
-
+                val percentMatch = result.getInt("PercentMatch")
                 roomCandidates.add(roomName)
             }
         } catch (ex: SQLException) {
