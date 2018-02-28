@@ -1,9 +1,6 @@
 package geofence
 
-import java.sql.Connection
-import java.sql.DriverManager
-import java.sql.ResultSet
-import java.sql.SQLException
+import java.sql.*
 
 class SqliteCRUD {
     private val currentDir = System.getProperty("user.dir")
@@ -11,7 +8,7 @@ class SqliteCRUD {
 
     private val dbPath = "jdbc:sqlite:$currentDir/$filename"
 
-    private fun connection(): Connection {
+    fun connection(): Connection {
         try {
             return DriverManager.getConnection(dbPath)
         } catch (ex: SQLException) {
@@ -31,14 +28,17 @@ class SqliteCRUD {
 
 
     fun sqlExecute(sql: String) {
-        val statement = connection().createStatement()
+        val connection = connection()
+        val statement = connection.createStatement()
         statement.execute(sql)
+        connection.close()
     }
 
     fun sqlExecuteQuery(sql: String):ResultSet {
-        val statement = connection().createStatement()
-
-        return statement.executeQuery(sql)
+        val connection = connection()
+        val statement = connection.createStatement()
+        val result = statement.executeQuery(sql)
+        connection.close()
+        return result
     }
-
 }
