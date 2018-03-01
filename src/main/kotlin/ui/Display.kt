@@ -10,7 +10,7 @@ package ui
 import geofence.GeofenceAPI
 import geofence.SqliteDataAccess
 import network.NetworkRecorder
-import network.NetworkScanner
+import network.platform.LinuxNetworkScanner
 import java.awt.BorderLayout
 import java.util.*
 import java.util.concurrent.Executors
@@ -26,7 +26,7 @@ class Display : JFrame("Where Am I") {
 
     private val geofenceAPI:GeofenceAPI = SqliteDataAccess()
     private val networkRecorder = NetworkRecorder()
-    private val networkScanner = NetworkScanner()
+    private val networkScanner = LinuxNetworkScanner()
 
     private val titleLabel = JLabel()
     private val buildingsList: JList<Any> = JList()

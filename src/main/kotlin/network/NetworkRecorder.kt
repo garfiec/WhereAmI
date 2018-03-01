@@ -1,5 +1,6 @@
 package network
 
+import network.platform.LinuxNetworkScanner
 import java.util.concurrent.*
 
 class NetworkRecorder {
@@ -9,7 +10,7 @@ class NetworkRecorder {
     private var scanSummary = HashMap<String, NetworkCharacteristics>()
 
     private val recordRoutine = Runnable {
-        val networkScan = NetworkScanner().scan()
+        val networkScan = LinuxNetworkScanner().scan()
         for (newNetwork in networkScan) {
             // Filter out networks with weak signal
             if (newNetwork.signal >= 25) {
