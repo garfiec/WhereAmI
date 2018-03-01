@@ -49,7 +49,7 @@ class Display : JFrame("Where Am I") {
         scheduledPool.scheduleAtFixedRate(updater, 0, 250, TimeUnit.MILLISECONDS)
 
         defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
-        setSize(1000, 700)
+        setSize(1200, 800)
         isVisible = true
     }
 
@@ -98,9 +98,9 @@ class Display : JFrame("Where Am I") {
         }
         buildingsList.selectionMode = ListSelectionModel.SINGLE_SELECTION
         val buildingsOptionsPanel = JPanel()
-        val buildingsOptionsLayout = BoxLayout(buildingsOptionsPanel, BoxLayout.PAGE_AXIS)
+        val buildingsOptionsLayout = BoxLayout(buildingsOptionsPanel, BoxLayout.LINE_AXIS)
         buildingsOptionsPanel.layout = buildingsOptionsLayout
-        val buildingsAddButton = JButton("Add Building")
+        val buildingsAddButton = JButton("Add")
         buildingsAddButton.addActionListener {
             val buildingName: String? = JOptionPane.showInputDialog(this, "Enter building name")
             if (buildingName != null) {
@@ -109,12 +109,12 @@ class Display : JFrame("Where Am I") {
                 updateBuildings()
             }
         }
-        val buildingsRemoveButton = JButton("Remove Building")
+        val buildingsRemoveButton = JButton("Remove")
         buildingsRemoveButton.addActionListener {
             if (buildingsList.selectedIndex != -1) geofenceAPI.removeBuilding(buildingsList.selectedValue.toString())
             updateBuildings()
         }
-        val buildingsRenameButton = JButton("Rename Building")
+        val buildingsRenameButton = JButton("Rename")
         buildingsRenameButton.addActionListener {
             if (buildingsList.selectedIndex != -1) {
                 val oldBuildingName = buildingsList.selectedValue.toString()
@@ -129,8 +129,12 @@ class Display : JFrame("Where Am I") {
         buildingsOptionsPanel.add(buildingsAddButton)
         buildingsOptionsPanel.add(buildingsRemoveButton)
         buildingsOptionsPanel.add(buildingsRenameButton)
+
+        val buildingsListScroll = JScrollPane()
+        buildingsListScroll.setViewportView(buildingsList)
+
         buildingsPanel.add(buildingsLabel, BorderLayout.NORTH)
-        buildingsPanel.add(buildingsList, BorderLayout.CENTER)
+        buildingsPanel.add(buildingsListScroll, BorderLayout.CENTER)
         buildingsPanel.add(buildingsOptionsPanel, BorderLayout.SOUTH)
 
         // Rooms
@@ -141,9 +145,9 @@ class Display : JFrame("Where Am I") {
         }
         roomsList.selectionMode = ListSelectionModel.SINGLE_SELECTION
         val roomsOptionsPanel = JPanel()
-        val roomsOptionsLayout = BoxLayout(roomsOptionsPanel, BoxLayout.PAGE_AXIS)
+        val roomsOptionsLayout = BoxLayout(roomsOptionsPanel, BoxLayout.LINE_AXIS)
         roomsOptionsPanel.layout = roomsOptionsLayout
-        val roomsAddButton = JButton("Add Room")
+        val roomsAddButton = JButton("Add")
         roomsAddButton.addActionListener {
             if (buildingsList.selectedIndex != -1) {
                 val buildingName = buildingsList.selectedValue.toString()
@@ -155,7 +159,7 @@ class Display : JFrame("Where Am I") {
                 }
             }
         }
-        val roomsRemoveButton = JButton("Remove Room")
+        val roomsRemoveButton = JButton("Remove")
         roomsRemoveButton.addActionListener {
             if (buildingsList.selectedIndex != -1 && roomsList.selectedIndex != -1) {
                 val buildingName = buildingsList.selectedValue.toString()
@@ -163,7 +167,7 @@ class Display : JFrame("Where Am I") {
                 updateRooms()
             }
         }
-        val roomsRenameButton = JButton("Rename Room")
+        val roomsRenameButton = JButton("Rename")
         roomsRenameButton.addActionListener {
             if (buildingsList.selectedIndex != -1 && roomsList.selectedIndex != -1) {
                 val buildingName = buildingsList.selectedValue.toString()
@@ -179,8 +183,12 @@ class Display : JFrame("Where Am I") {
         roomsOptionsPanel.add(roomsAddButton)
         roomsOptionsPanel.add(roomsRemoveButton)
         roomsOptionsPanel.add(roomsRenameButton)
+
+        val roomsListScroll = JScrollPane()
+        roomsListScroll.setViewportView(roomsList)
+
         roomsPanel.add(roomsLabel, BorderLayout.NORTH)
-        roomsPanel.add(roomsList, BorderLayout.CENTER)
+        roomsPanel.add(roomsListScroll, BorderLayout.CENTER)
         roomsPanel.add(roomsOptionsPanel, BorderLayout.SOUTH)
 
         fencePanel.add(buildingsPanel, BorderLayout.WEST)
@@ -236,8 +244,11 @@ class Display : JFrame("Where Am I") {
         roomsActionsPanel.add(stopLearningButton)
         roomsActionsPanel.add(resetRoomButton)
 
+        val networkListScroll = JScrollPane()
+        networkListScroll.setViewportView(networksList)
+
         networksPanel.add(networksLabel, BorderLayout.NORTH)
-        networksPanel.add(networksList, BorderLayout.CENTER)
+        networksPanel.add(networkListScroll, BorderLayout.CENTER)
         networksPanel.add(roomsActionsPanel, BorderLayout.SOUTH)
         this.add(networksPanel, BorderLayout.CENTER)
     }
