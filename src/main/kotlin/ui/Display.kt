@@ -213,6 +213,7 @@ class Display : JFrame("Where Am I") {
                 isLearning = true
                 buildingsList.isEnabled = false
                 roomsList.isEnabled = false
+                this.title = "Where Am I - Learning Room"
 
                 networkRecorder.startRecord()
             }
@@ -228,6 +229,7 @@ class Display : JFrame("Where Am I") {
                 isLearning = false
                 buildingsList.isEnabled = true
                 roomsList.isEnabled = true
+                this.title = "Where Am I"
                 updateNetworks()
             }
         }
