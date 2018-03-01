@@ -12,13 +12,14 @@ import geofence.SqliteDataAccess
 import network.NetworkRecorder
 import network.NetworkScanner
 import java.awt.BorderLayout
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import javax.swing.*
 import javax.swing.border.EmptyBorder
 import javax.swing.border.LineBorder
-import kotlin.collections.ArrayList
+import javax.swing.table.DefaultTableModel
 
 class Display : JFrame("Where Am I") {
     private val scheduledPool: ScheduledExecutorService = Executors.newScheduledThreadPool(1)
@@ -30,7 +31,8 @@ class Display : JFrame("Where Am I") {
     private val titleLabel = JLabel()
     private val buildingsList: JList<Any> = JList()
     private val roomsList: JList<Any> = JList()
-    private val networksList: JList<Any> = JList()
+    private val networksList = JTable()
+    private val networksListTM:DefaultTableModel = networksList.model as DefaultTableModel
 
     private var isLearning = false
 
@@ -44,9 +46,9 @@ class Display : JFrame("Where Am I") {
         initializeUI()
 
         val updater = Runnable {
-            updateTitle()
+            if (!isLearning) updateTitle()
         }
-        scheduledPool.scheduleAtFixedRate(updater, 0, 250, TimeUnit.MILLISECONDS)
+        scheduledPool.scheduleAtFixedRate(updater, 0, 2000, TimeUnit.MILLISECONDS)
 
         defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
         setSize(1200, 800)
@@ -197,11 +199,17 @@ class Display : JFrame("Where Am I") {
     }
 
     private fun createNetworksPanel() {
+
         val networksPanel = JPanel(BorderLayout())
         networksPanel.border = EmptyBorder(8, 8, 5, 5)
 
         val networksLabel = JLabel("Networks")
-        networksList.selectionMode = ListSelectionModel.SINGLE_SELECTION
+
+        networksListTM.addColumn("SSID")
+        networksListTM.addColumn("BSSID")
+        networksListTM.addColumn("Min Signal")
+        networksListTM.addColumn("Max Signal")
+        networksListTM.addColumn("Delta Signal")
 
         val roomsActionsPanel = JPanel()
         val roomsActionsLayout = BoxLayout(roomsActionsPanel, BoxLayout.LINE_AXIS)
@@ -275,6 +283,7 @@ class Display : JFrame("Where Am I") {
             val building = firstCandidate.BuildingName
             val room = firstCandidate.RoomName
             val confidence = firstCandidate.Confidence
+            println("You are certain to be at $building in room $room with a confidence of $confidence%")
             titleLabel.text = "You are certain to be at $building in room $room with a confidence of $confidence%"
         }
         else {
@@ -298,16 +307,21 @@ class Display : JFrame("Where Am I") {
     }
 
     private fun updateNetworks() {
-        if (buildingsList.selectedIndex == -1) {
-            networksList.setListData(arrayOf<String>())
-        }
-        else {
+        networksListTM.rowCount = 0
+        if (buildingsList.selectedIndex != -1) {
             val building = buildingsList.selectedValue.toString()
             val room = roomsList.selectedValue.toString()
             val networks = geofenceAPI.getRoomNetworkData(building, room)
-            val prettyPrint = ArrayList<String>()
-            networks.mapTo(prettyPrint) { "SSID: " + it.ssid + " | BSSID: " + it.bssid + " | MIN SIGNAL: " + it.minSignal + " | MAX SIGNAL: " + it.maxSignal + " | Delta: " + (it.maxSignal - it.minSignal) }
-            networksList.setListData(prettyPrint.toArray())
+
+            for (network in networks) {
+                val newRow = Vector<String>()
+                newRow.add(network.ssid)
+                newRow.add(network.bssid)
+                newRow.add(network.minSignal.toString())
+                newRow.add(network.maxSignal.toString())
+                newRow.add((network.maxSignal-network.minSignal).toString())
+                networksListTM.addRow(newRow)
+            }
         }
     }
 }
