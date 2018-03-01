@@ -247,9 +247,10 @@ class SqliteDataAccess: GeofenceAPI{
         return networksList.toList()
     }
 
+    // Todo: add hit rate
     override fun findRoomCandidates(scan: List<NetworkScanner.Network>): List<GeofenceAPI.RoomCandidates> {
         val sqlConditions = ArrayList<String>()
-        scan.mapTo(sqlConditions) { "(network_data.BSSID=? AND " + it.signal + " BETWEEN network_data.Min AND network_data.Max)" }
+        scan.mapTo(sqlConditions) { "(network_data.BSSID=? AND (" + it.signal + " BETWEEN network_data.Min AND network_data.Max) AND (network_data.Max - network_data.Min) > 5)" }
 
         // To avoid sql injection because of name, prepared statement for ssid is used
         val sqlConditionsString = sqlConditions.toList().joinToString(" OR ")
@@ -267,6 +268,7 @@ class SqliteDataAccess: GeofenceAPI{
                 "\tGROUP BY RoomID\n" +
                 ") src\n" +
                 "ON src.RoomID=room.RoomID\n" +
+                "WHERE (network_data.Max - network_data.Min) > 5\n" +
                 "GROUP BY room.Name\n" +
                 "ORDER BY PercentMatch DESC"
         val statement = connection.prepareStatement(sql)
