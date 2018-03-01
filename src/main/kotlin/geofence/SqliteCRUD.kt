@@ -38,7 +38,6 @@ class SqliteCRUD {
         val connection = connection()
         val statement = connection.createStatement()
         val result = statement.executeQuery(sql)
-        connection.close()
         return result
     }
 }
