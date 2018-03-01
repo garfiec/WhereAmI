@@ -30,7 +30,7 @@ class NetworkRecorder {
     }
 
     fun startRecord() {
-        scheduledPool.scheduleAtFixedRate(recordRoutine, 0, 1500, TimeUnit.MILLISECONDS)
+        scheduledPool.scheduleAtFixedRate(recordRoutine, 0, 250, TimeUnit.MILLISECONDS)
     }
 
     fun stopRecord() {
