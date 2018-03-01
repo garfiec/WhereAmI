@@ -12,7 +12,7 @@ class NetworkRecorder {
         val networkScan = NetworkScanner().scan()
         for (newNetwork in networkScan) {
             // Filter out networks with weak signal
-            if (newNetwork.signal > 20) {
+            if (newNetwork.signal >= 25) {
                 if (scanSummary.containsKey(newNetwork.bssid)) {
                     val network = scanSummary[newNetwork.bssid]
                     // Check lower bound

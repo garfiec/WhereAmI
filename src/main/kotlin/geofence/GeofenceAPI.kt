@@ -4,6 +4,8 @@ import network.NetworkRecorder
 import network.NetworkScanner
 
 interface GeofenceAPI {
+    data class RoomCandidates(val BuildingName:String, val RoomName: String, val Confidence: Float)
+
     // Fences
     fun addBuilding(buildingName: String): Boolean                  // Add a new building entry
     fun addRoom(buildingName: String, roomName: String): Boolean    // Add a new room entry
@@ -20,5 +22,5 @@ interface GeofenceAPI {
     fun learnRoom(buildingName: String, roomName: String, scanSummary: List<NetworkRecorder.NetworkCharacteristics>)    // Add new or update set
     fun resetRoom(buildingName: String, roomName: String)                                                               // Delete all room data
     fun relearnRoom(buildingName: String, roomName: String, scanSummary: List<NetworkRecorder.NetworkCharacteristics>)  // Delete all and replace
-    fun findRoomCandidates(scan: List<NetworkScanner.Network>): List<String>                                            // Ranks a list of possible rooms
+    fun findRoomCandidates(scan: List<NetworkScanner.Network>): List<RoomCandidates>                                    // Ranks a list of possible rooms
 }

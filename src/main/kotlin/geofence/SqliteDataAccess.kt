@@ -228,7 +228,7 @@ class SqliteDataAccess: GeofenceAPI{
         learnRoom(buildingName, roomName, scanSummary)
     }
 
-    override fun findRoomCandidates(scan: List<NetworkScanner.Network>): List<String> {
+    override fun findRoomCandidates(scan: List<NetworkScanner.Network>): List<GeofenceAPI.RoomCandidates> {
         val sqlConditions = ArrayList<String>()
         scan.mapTo(sqlConditions) { "(network_data.BSSID=? AND " + it.signal + " BETWEEN network_data.Min AND network_data.Max)" }
 
@@ -256,13 +256,13 @@ class SqliteDataAccess: GeofenceAPI{
         }
 
         val result = statement.executeQuery()
-        val roomCandidates = ArrayList<String>()
+        val roomCandidates = ArrayList<GeofenceAPI.RoomCandidates>()
         try {
             while (result.next()) {
                 val buildingName = result.getString("BuildingName")
                 val roomName = result.getString("RoomName")
-                val percentMatch = result.getInt("PercentMatch")
-                roomCandidates.add(roomName)
+                val percentMatch = result.getFloat("PercentMatch")
+                roomCandidates.add(GeofenceAPI.RoomCandidates(buildingName, roomName, percentMatch))
             }
         } catch (ex: SQLException) {
             println("Error: No results found")
