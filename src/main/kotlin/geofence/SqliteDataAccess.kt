@@ -228,6 +228,25 @@ class SqliteDataAccess: GeofenceAPI{
         learnRoom(buildingName, roomName, scanSummary)
     }
 
+    override fun getRoomNetworkData(buildingName: String, roomName: String): List<NetworkRecorder.NetworkCharacteristics> {
+        val roomID = getRoomID(buildingName, roomName)
+        if (roomID == -1) return Collections.emptyList()
+
+        val sql = "SELECT SSID, BSSID, Min, Max FROM network_data WHERE RoomID=$roomID;"
+        val results = db.sqlExecuteQuery(sql)
+
+        val networksList = ArrayList<NetworkRecorder.NetworkCharacteristics>()
+        while (results.next()) {
+            val ssid = results.getString("SSID")
+            val bssid = results.getString("BSSID")
+            val min = results.getInt("Min")
+            val max = results.getInt("Max")
+            networksList.add(NetworkRecorder.NetworkCharacteristics(ssid, bssid, min, max))
+        }
+
+        return networksList.toList()
+    }
+
     override fun findRoomCandidates(scan: List<NetworkScanner.Network>): List<GeofenceAPI.RoomCandidates> {
         val sqlConditions = ArrayList<String>()
         scan.mapTo(sqlConditions) { "(network_data.BSSID=? AND " + it.signal + " BETWEEN network_data.Min AND network_data.Max)" }

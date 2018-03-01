@@ -22,5 +22,6 @@ interface GeofenceAPI {
     fun learnRoom(buildingName: String, roomName: String, scanSummary: List<NetworkRecorder.NetworkCharacteristics>)    // Add new or update set
     fun resetRoom(buildingName: String, roomName: String)                                                               // Delete all room data
     fun relearnRoom(buildingName: String, roomName: String, scanSummary: List<NetworkRecorder.NetworkCharacteristics>)  // Delete all and replace
+    fun getRoomNetworkData(buildingName: String, roomName: String): List<NetworkRecorder.NetworkCharacteristics>
     fun findRoomCandidates(scan: List<NetworkScanner.Network>): List<RoomCandidates>                                    // Ranks a list of possible rooms
 }
