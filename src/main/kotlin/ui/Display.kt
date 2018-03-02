@@ -12,6 +12,8 @@ import geofence.SqliteDataAccess
 import network.NetworkRecorder
 import network.platform.LinuxNetworkScanner
 import java.awt.BorderLayout
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -75,6 +77,19 @@ class Display : JFrame("Where Am I") {
     private fun createTitleUI() {
         val titlePanel = JPanel(BorderLayout())
         titlePanel.border = LineBorder.createGrayLineBorder()
+        titlePanel.addMouseListener(object: MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent?) {
+                val candidates = geofenceAPI.findRoomCandidates(networkScanner.scan())
+                var summary = ""
+                for (c in candidates) {
+                    val buildingName = c.BuildingName
+                    val roomName = c.RoomName
+                    val confidence = c.Confidence
+                    summary += "Building: $buildingName | Room: $roomName | Confidence: $confidence\n"
+                }
+                JOptionPane.showMessageDialog(this@Display, summary)
+            }
+        })
 
         val titlePadding = JPanel(BorderLayout())
         titlePadding.border = EmptyBorder(8, 8, 5, 5)
