@@ -6,7 +6,9 @@ import java.util.concurrent.*
 class NetworkRecorder {
     data class NetworkCharacteristics(var ssid: String, val bssid: String, var minSignal: Int, var maxSignal: Int)
 
-    private val scheduledPool:ScheduledExecutorService = Executors.newScheduledThreadPool(1)
+    private var isRecording = false
+
+    private var scheduledPool:ScheduledExecutorService = Executors.newScheduledThreadPool(0)
     private var scanSummary = HashMap<String, NetworkCharacteristics>()
 
     private val recordRoutine = Runnable {
@@ -31,10 +33,15 @@ class NetworkRecorder {
     }
 
     fun startRecord() {
-        scheduledPool.scheduleAtFixedRate(recordRoutine, 0, 250, TimeUnit.MILLISECONDS)
+        if (!isRecording) {
+            isRecording = true
+            scheduledPool = Executors.newScheduledThreadPool(1)
+            scheduledPool.scheduleAtFixedRate(recordRoutine, 0, 250, TimeUnit.MILLISECONDS)
+        }
     }
 
     fun stopRecord() {
+        isRecording = false
         scheduledPool.shutdown()
     }
 
