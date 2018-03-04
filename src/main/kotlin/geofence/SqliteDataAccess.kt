@@ -10,7 +10,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 class SqliteDataAccess: GeofenceAPI{
-    private var db = SqliteCRUD()
+    private var db = SqliteDBConnect()
 
     init {
         db.connectDatabase()

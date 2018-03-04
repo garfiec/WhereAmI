@@ -2,7 +2,7 @@ package geofence
 
 import java.sql.*
 
-class SqliteCRUD {
+class SqliteDBConnect {
     private val currentDir = System.getProperty("user.dir")
     private val filename = "whereami-db"
 
