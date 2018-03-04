@@ -117,7 +117,7 @@ class SqliteDataAccess: GeofenceAPI{
     }
 
     override fun listBuildings():List<String> {
-        val sql = "SELECT Name FROM building;"
+        val sql = "SELECT Name FROM building ORDER BY Name ASC;"
         val result = db.sqlExecuteQuery(sql)
         val buildingsList:ArrayList<String> = ArrayList()
         while (result.next()) {
@@ -131,7 +131,7 @@ class SqliteDataAccess: GeofenceAPI{
         val buildingID = getBuildingID(buildingName)
         if (buildingID == -1) return Collections.emptyList()
 
-        val sql = "SELECT Name from room WHERE BuildingID=$buildingID;"
+        val sql = "SELECT Name from room WHERE BuildingID=$buildingID ORDER BY Name ASC;"
         val result = db.sqlExecuteQuery(sql)
         val roomList:ArrayList<String> = ArrayList()
         while (result.next()) {
@@ -232,7 +232,7 @@ class SqliteDataAccess: GeofenceAPI{
         val roomID = getRoomID(buildingName, roomName)
         if (roomID == -1) return Collections.emptyList()
 
-        val sql = "SELECT SSID, BSSID, Min, Max FROM network_data WHERE RoomID=$roomID;"
+        val sql = "SELECT SSID, BSSID, Min, Max FROM network_data WHERE RoomID=$roomID ORDER BY BSSID ASC;"
         val results = db.sqlExecuteQuery(sql)
 
         val networksList = ArrayList<NetworkRecorder.NetworkCharacteristics>()
